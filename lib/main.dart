@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'main.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -113,3 +115,81 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+class ElectricityWidget extends StatefulWidget {
+  CityStreets({key}) {
+    // TODO: implement CityStreets
+    throw UnimplementedError();
+  }
+
+  @override
+  State<CityStreets> createState() => _CityStreetsState();
+
+
+}
+
+class CityStreets {
+}
+
+  class _CityStreetsState extends State<CityStreets> {
+    @override
+    Widget build(BuildContext context) {
+      final wordPair = WordPair.random();
+      return Text(wordPair.asPascalCase);
+    }
+  }
+
+  class GalleryDemoPage extends StatefulWidget {
+  const GalleryDemoPage({
+    super.key,
+    required this.restorationId,
+    required this.demo,
+  });
+
+  final String restorationId;
+  final GalleryDemo demo;
+
+  @override
+  State<GalleryDemoPage> createState() => _GalleryDemoPageState();
+}
+
+
+
+class _GalleryDemoPageState extends State<GalleryDemoPage>
+    with RestorationMixin, TickerProviderStateMixin {
+  final RestorableInt _demoStateIndex = RestorableInt(_DemoState.normal.index);
+  final RestorableInt _configIndex = RestorableInt(0);
+
+  bool? _isDesktop;
+  bool _showFeatureHighlight = true;
+  late int _demoViewedCount;
+
+  late AnimationController _codeBackgroundColorController;
+
+  @override
+  String get restorationId => widget.restorationId;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_demoStateIndex, 'demo_state');
+    registerForRestoration(_configIndex, 'configuration_index');
+  }
+
+  GalleryDemoConfiguration get _currentConfig {
+    return widget.demo.configurations[_configIndex.value];
+  }
+
+  bool get _hasOptions => widget.demo.configurations.length > 1;
+
+  bool get _isSupportedSharedPreferencesPlatform =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
+  // Only show the feature highlight on Android/iOS, in mobile layout, non-test
+  // mode, and only on the first and fourth time the demo page is viewed.
+  bool _showFeatureHighlightForPlatform(BuildContext context) {
+    return _showFeatureHighlight &&
+        _isSupportedSharedPreferencesPlatform &&
+        !isDisplayDesktop(context) &&
+        !GalleryOptions.of(context).isTestMode &&
+        (_demoViewedCount == 0 || _demoViewedCount == 3);
+  }
